@@ -834,7 +834,8 @@ public:
             auto * replicated_column_function = typeid_cast<ColumnFunction *>(replicated_column_function_ptr.get());
             replicated_column_function->appendArguments(arrays);
 
-            block.getByPosition(result).column = Impl::execute(*column_first_array, replicated_column_function->reduce());
+            block.getByPosition(result).column = Impl::execute(*column_first_array,
+                                                               replicated_column_function->reduce().column);
         }
     }
 };

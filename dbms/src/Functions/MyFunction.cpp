@@ -124,43 +124,6 @@ NullPresence getNullPresense(const ColumnsWithTypeAndName & args)
     return res;
 }
 
-NullPresence getNullPresence(const DataTypes & types)
-{
-    NullPresence res;
-
-    for (const auto & type : types)
-    {
-        if (!res.has_nullable)
-            res.has_nullable = type->isNullable();
-        if (!res.has_null_constant)
-            res.has_null_constant = type->onlyNull();
-    }
-
-    return res;
-}
-
-/// Turn the specified set of data types into their respective nested data types.
-DataTypes toNestedDataTypes(const DataTypes & args)
-{
-    DataTypes new_args;
-    new_args.reserve(args.size());
-
-    for (const auto & arg : args)
-    {
-        if (arg->isNullable())
-        {
-            auto nullable_type = static_cast<const DataTypeNullable *>(arg.get());
-            const DataTypePtr & nested_type = nullable_type->getNestedType();
-            new_args.push_back(nested_type);
-        }
-        else
-            new_args.push_back(arg);
-    }
-
-    return new_args;
-}
-
-
 bool allArgumentsAreConstants(const Block & block, const ColumnNumbers & args)
 {
     for (auto arg : args)
