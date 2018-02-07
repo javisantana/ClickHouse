@@ -635,13 +635,13 @@ public:
             nested_types[i] = array_type->getNestedType();
         }
 
-        const DataTypeExpression * expression_type = checkAndGetDataType<DataTypeExpression>(&*arguments[0]);
-        if (!expression_type || expression_type->getArgumentTypes().size() != nested_types.size())
-            throw Exception("First argument for this overload of " + getName() + " must be an expression with "
+        const DataTypeFunction * function_type = checkAndGetDataType<DataTypeFunction>(&*arguments[0]);
+        if (!function_type || function_type->getArgumentTypes().size() != nested_types.size())
+            throw Exception("First argument for this overload of " + getName() + " must be a function with "
                             + toString(nested_types.size()) + " arguments. Found "
                             + arguments[0]->getName() + " instead.", ErrorCodes::ILLEGAL_TYPE_OF_ARGUMENT);
 
-        arguments[0] = std::make_shared<DataTypeExpression>(nested_types);
+        arguments[0] = std::make_shared<DataTypeFunction>(nested_types);
     }
 
     /*
