@@ -56,9 +56,9 @@ public:
     const DataTypes & getArgumentTypes() const override { return argument_types; }
     const DataTypePtr & getReturnType() const override { return return_type; }
 
-    PreparedFunctionPtr prepare(const Block & sample_block) const override
+    PreparedFunctionPtr prepare(const Block &) const override
     {
-        return shared_from_this();
+        return std::const_pointer_cast<FunctionExpression>(shared_from_this());
     }
 
     void execute(Block & block, const ColumnNumbers & arguments, size_t result) override
@@ -112,7 +112,7 @@ public:
 
     PreparedFunctionPtr prepare(const Block & sample_block) const override
     {
-        return shared_from_this();
+        return std::const_pointer_cast<FunctionCapture>(shared_from_this());
     }
 
     void execute(Block & block, const ColumnNumbers & arguments, size_t result) override
@@ -132,10 +132,10 @@ public:
 
 protected:
     DataTypePtr getReturnTypeImpl(const ColumnsWithTypeAndName & arguments) const override { return return_type; }
-    bool useDefaultImplementationForNulls() const overrdie { return false; }
+    bool useDefaultImplementationForNulls() const override { return false; }
     FunctionBasePtr buildImpl(const ColumnsWithTypeAndName & arguments, const DataTypePtr & return_type) const override
     {
-        return shared_from_this();
+        return std::const_pointer_cast<FunctionCapture>(shared_from_this());
     }
 
 private:

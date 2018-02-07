@@ -303,17 +303,15 @@ static bool getConstant(const ASTPtr & expr, Block & block_with_constants, Field
 
 
 static void applyFunction(
-    const FunctionBuilderPtr & func_builder,
+    const FunctionBasePtr & func,
     const DataTypePtr & arg_type, const Field & arg_value,
     DataTypePtr & res_type, Field & res_value)
 {
-    ColumnsWithTypeAndName arguments{{ arg_type->createColumnConst(1, arg_value), arg_type, "x" }};
-    auto func = func_builder->build(arguments);
     res_type = func->getReturnType();
 
     Block block
     {
-        arguments[0],
+        { arg_type->createColumnConst(1, arg_value), arg_type, "x" },
         { nullptr, res_type, "y" }
     };
 
