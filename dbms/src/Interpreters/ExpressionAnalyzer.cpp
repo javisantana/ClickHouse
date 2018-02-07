@@ -2222,7 +2222,7 @@ void ExpressionAnalyzer::getActionsImpl(const ASTPtr & ast, bool no_subqueries, 
                         ///  because it does not uniquely define the expression (the types of arguments can be different).
                         String lambda_name = getUniqueName(actions_stack.getSampleBlock(), "__lambda");
 
-                        auto function_capture = std::make_shared<FunctionCapture>(lambda_actions, captured, result_name, result_type);
+                        auto function_capture = std::make_shared<FunctionCapture>(lambda_actions, captured, result_type, result_name);
                         actions_stack.addAction(ExpressionAction::applyFunction(function_capture, captured, lambda_name), {});
 
                         argument_types[i] = std::make_shared<DataTypeFunction>(lambda_type->getArgumentTypes(), result_type);
