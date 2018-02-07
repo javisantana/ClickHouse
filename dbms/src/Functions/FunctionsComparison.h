@@ -1085,7 +1085,8 @@ public:
             size_t size = left_tuple->getElements().size();
             for (size_t i = 0; i < size; ++i)
             {
-                ColumnsWithTypeAndName args = {left_tuple->getElements()[i], right_tuple->getElements()[i]};
+                ColumnsWithTypeAndName args = {{nullptr, left_tuple->getElements()[i], ""},
+                                               {nullptr, right_tuple->getElements()[i], ""}};
                 getReturnType(args);
             }
         }

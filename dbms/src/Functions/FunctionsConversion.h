@@ -1423,7 +1423,7 @@ private:
     template <typename ColumnStringType, typename EnumType>
     WrapperType createStringToEnumWrapper() const
     {
-        return [] (Block & block, const ColumnNumbers & arguments, const size_t result)
+        return [name] (Block & block, const ColumnNumbers & arguments, const size_t result)
         {
             const auto first_col = block.getByPosition(arguments.front()).column.get();
 
@@ -1631,7 +1631,7 @@ public:
     static constexpr auto name = "CAST";
     static FunctionBuilderPtr create(const Context & context) { return std::make_shared<FunctionCastBuilder>(context); }
 
-    FunctionCastBuilder(const Context & context) : context(context) {}
+    FunctionBuilderCast(const Context & context) : context(context) {}
 
     String getName() const { return name; }
 
