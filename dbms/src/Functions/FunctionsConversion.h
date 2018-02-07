@@ -1423,7 +1423,8 @@ private:
     template <typename ColumnStringType, typename EnumType>
     WrapperType createStringToEnumWrapper() const
     {
-        return [name] (Block & block, const ColumnNumbers & arguments, const size_t result)
+        const char * function_name = name;
+        return [function_name] (Block & block, const ColumnNumbers & arguments, const size_t result)
         {
             const auto first_col = block.getByPosition(arguments.front()).column.get();
 
@@ -1445,8 +1446,7 @@ private:
             }
             else
                 throw Exception{
-                    "Unexpected column " + first_col->getName() + " as first argument of function " +
-                        name,
+                    "Unexpected column " + first_col->getName() + " as first argument of function " + function_name,
                     ErrorCodes::LOGICAL_ERROR};
         };
     }
@@ -1629,7 +1629,7 @@ public:
     using MonotonicityForRange = FunctionCast::MonotonicityForRange;
 
     static constexpr auto name = "CAST";
-    static FunctionBuilderPtr create(const Context & context) { return std::make_shared<FunctionCastBuilder>(context); }
+    static FunctionBuilderPtr create(const Context & context) { return std::make_shared<FunctionBuilderCast>(context); }
 
     FunctionBuilderCast(const Context & context) : context(context) {}
 
