@@ -1406,7 +1406,9 @@ public:
 
     void executeImpl(Block & block, const ColumnNumbers & arguments, size_t result) override;
 private:
-    AggregateFunctionPtr aggregate_function;
+    /// lazy initialization in getReturnTypeImpl
+    /// TODO: init in FunctionBuilder
+    mutable AggregateFunctionPtr aggregate_function;
 };
 
 

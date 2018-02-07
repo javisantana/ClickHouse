@@ -1215,7 +1215,7 @@ private:
         };
     }
 
-    static WrapperType createFixedStringWrapper(const DataTypePtr & from_type, const size_t N) const
+    static WrapperType createFixedStringWrapper(const DataTypePtr & from_type, const size_t N)
     {
         if (!from_type->isStringOrFixedString())
             throw Exception{
@@ -1647,8 +1647,8 @@ protected:
         for (size_t i = 0; i < arguments.size(); ++i)
             data_types[i] = arguments[i].type;
 
-        auto monotonicity_information = getMonotonicityInformation(arguments.front().type, return_type.get());
-        return std::make_shared<FunctionCast>(context, name, monotonicity_information, arguments, return_type);
+        auto monotonicity = getMonotonicityInformation(arguments.front().type, return_type.get());
+        return std::make_shared<FunctionCast>(context, name, std::move(monotonicity), arguments, return_type);
     }
 
     DataTypePtr getReturnTypeImpl(const ColumnsWithTypeAndName & arguments) const override
