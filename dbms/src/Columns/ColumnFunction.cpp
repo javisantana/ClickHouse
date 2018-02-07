@@ -94,12 +94,12 @@ std::vector<MutableColumnPtr> ColumnFunction::scatter(IColumn::ColumnIndex num_c
 void ColumnFunction::insertDefault()
 {
     for (auto & column : captured_columns)
-        column.column->mutate()->insertDefault();
+        column.column->assumeMutable()->insertDefault();
 }
 void ColumnFunction::popBack(size_t n)
 {
     for (auto & column : captured_columns)
-        column.column->mutate()->popBack(n);
+        column.column->assumeMutable()->popBack(n);
 }
 
 size_t ColumnFunction::byteSize() const
