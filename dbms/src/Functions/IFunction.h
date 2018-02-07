@@ -138,7 +138,7 @@ public:
         bool is_positive = true;    /// true if the function is nondecreasing, false, if notincreasing. If is_monotonic = false, then it does not matter.
         bool is_always_monotonic = false; /// Is true if function is monotonic on the whole input range I
 
-        explicit Monotonicity(bool is_monotonic_ = false, bool is_positive_ = true, bool is_always_monotonic_ = false)
+        Monotonicity(bool is_monotonic_ = false, bool is_positive_ = true, bool is_always_monotonic_ = false)
                 : is_monotonic(is_monotonic_), is_positive(is_positive_), is_always_monotonic(is_always_monotonic_) {}
     };
 
@@ -251,8 +251,6 @@ public:
     using PreparedFunctionImpl::execute;
     using FunctionBuilderImpl::getReturnTypeImpl;
     using FunctionBuilderImpl::getLambdaArgumentTypesImpl;
-
-    using Monotonicity = IFunctionBase::Monotonicity;
 
     PreparedFunctionPtr prepare(const Block & /*sample_block*/) const final
     {
