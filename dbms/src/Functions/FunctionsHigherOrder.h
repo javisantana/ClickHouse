@@ -727,10 +727,6 @@ public:
                 throw Exception("Function " + getName() + " needs one array argument.",
                     ErrorCodes::NUMBER_OF_ARGUMENTS_DOESNT_MATCH);
 
-            if (!arguments[0].column)
-                throw Exception("Type of first argument for function " + getName() + " must be an expression.",
-                    ErrorCodes::ILLEGAL_TYPE_OF_ARGUMENT);
-
             const auto data_type_function = checkAndGetDataType<DataTypeFunction>(arguments[0].type.get());
 
             if (!data_type_function)
