@@ -41,14 +41,11 @@ class FunctionExpression : public IFunctionBase, public IPreparedFunction,
 {
 public:
     FunctionExpression(const ExpressionActionsPtr & expression_actions,
+                       const DataTypes & argument_types, const Names & argument_names,
                        const DataTypePtr & return_type, const std::string & return_name)
-            : expression_actions(expression_actions), return_type(return_type), return_name(return_name)
+            : expression_actions(expression_actions), argument_types(argument_types),
+              argument_names(argument_names), return_type(return_type), return_name(return_name)
     {
-        auto & arguments = expression_actions->getRequiredColumnsWithTypes();
-        argument_types.reserve(arguments.size());
-
-        for (const auto & argument : arguments)
-            argument_types.push_back(argument.type);
     }
 
     String getName() const override { return "FunctionExpression"; }
@@ -64,8 +61,11 @@ public:
     void execute(Block & block, const ColumnNumbers & arguments, size_t result) override
     {
         Block expr_block;
-        for (auto argument : arguments)
-            expr_block.insert(block.getByPosition(argument));
+        for (size_t i = 0; i < arguments.size(); ++i)
+        {
+            const auto & argument = block.getByPosition(arguments[i]);
+            expr_block.insert({argument.column, argument.type, argument_names[i]});
+        }
 
         expression_actions->execute(expr_block);
 
@@ -75,6 +75,7 @@ public:
 private:
     ExpressionActionsPtr expression_actions;
     DataTypes argument_types;
+    Names argument_names;
     DataTypePtr return_type;
     std::string return_name;
 };
@@ -83,21 +84,40 @@ class FunctionCapture : public IFunctionBase, public IPreparedFunction, public F
                         public std::enable_shared_from_this<FunctionCapture>
 {
 public:
-    FunctionCapture(const ExpressionActionsPtr & expression_actions, const Names & captured,
+    FunctionCapture(const ExpressionActionsPtr & expression_actions, const Names & captured, const Names & args,
                     const DataTypePtr & function_return_type, const std::string & expression_return_name)
-            : expression_actions(expression_actions), function_return_type(function_return_type),
-              expression_return_name(expression_return_name)
+            : expression_actions(expression_actions), captured_names(captured), argument_names(args)
+            , function_return_type(function_return_type), expression_return_name(expression_return_name)
     {
-        auto & all_arguments = expression_actions->getRequiredColumnsWithTypes();
-        NameSet captured_args(captured.begin(), captured.end());
+        const auto & all_arguments = expression_actions->getRequiredColumnsWithTypes();
+        std::unordered_map<std::string, DataTypePtr> arguments_map;
+        for (const auto & arg : all_arguments)
+            arguments_map[arg.name] = arg.type;
 
-        for (const auto & argument : all_arguments)
+        auto collect = [&arguments_map](const Names & names)
         {
-            if (captured_args.count(argument.name))
-                captured_types.push_back(argument.type);
-            else
-                argument_types.push_back(argument.type);
-        }
+            DataTypes types;
+            types.reserve(names.size());
+            for (const auto & name : names)
+            {
+                auto it = arguments_map.find(name);
+                if (it == arguments_map.end())
+                    throw Exception("Lambda argument " + name + " not found in required columns.",
+                                    ErrorCodes::LOGICAL_ERROR);
+
+                types.push_back(it->second);
+                arguments_map.erase(it);
+            }
+
+            return types;
+        };
+
+        captured_types = collect(captured_names);
+        argument_types = collect(argument_names);
+
+        for (const auto & argument : arguments_map)
+                throw Exception("Required column " + argument.first + " not found in lambda arguments.",
+                                ErrorCodes::LOGICAL_ERROR);
 
         return_type = std::make_shared<DataTypeFunction>(argument_types, function_return_type);
 
@@ -117,14 +137,26 @@ public:
 
     void execute(Block & block, const ColumnNumbers & arguments, size_t result) override
     {
-        auto size = block.rows();
         ColumnsWithTypeAndName columns;
         columns.reserve(arguments.size());
+
+        DataTypes names;
+        DataTypes types;
+
+        names.reserve(captured_names.size() + argument_names.size());
+        names.insert(names.end(), captured_names.begin(), captured_names.end());
+        names.insert(names.end(), argument_names.begin(), argument_names.end());
+
+        types.reserve(captured_types.size() + argument_types.size());
+        types.insert(types.end(), captured_types.begin(), captured_types.end());
+        types.insert(types.end(), argument_types.begin(), argument_types.end());
+
         for (const auto & argument : arguments)
             columns.push_back(block.getByPosition(argument));
 
-        auto function = std::make_shared<FunctionExpression>(expression_actions, function_return_type,
-                                                             expression_return_name);
+        auto function = std::make_shared<FunctionExpression>(expression_actions, types, names,
+                                                             function_return_type, expression_return_name);
+        auto size = block.rows();
         block.getByPosition(result).column = ColumnFunction::create(size, std::move(function), columns);
     }
 
@@ -161,6 +193,8 @@ private:
     ExpressionActionsPtr expression_actions;
     DataTypes captured_types;
     DataTypes argument_types;
+    Names captured_names;
+    Names argument_names;
     DataTypePtr function_return_type;
     DataTypePtr return_type;
     std::string expression_return_name;
