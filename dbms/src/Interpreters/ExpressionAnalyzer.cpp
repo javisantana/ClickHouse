@@ -2192,7 +2192,6 @@ void ExpressionAnalyzer::getActionsImpl(const ASTPtr & ast, bool no_subqueries, 
                         ASTFunction * lambda_args_tuple = typeid_cast<ASTFunction *>(lambda->arguments->children.at(0).get());
                         ASTs lambda_arg_asts = lambda_args_tuple->arguments->children;
                         NamesAndTypesList lambda_arguments;
-                        Names lambda_arguments_names;
 
                         for (size_t j = 0; j < lambda_arg_asts.size(); ++j)
                         {
@@ -2203,7 +2202,6 @@ void ExpressionAnalyzer::getActionsImpl(const ASTPtr & ast, bool no_subqueries, 
                             String arg_name = identifier->name;
 
                             lambda_arguments.emplace_back(arg_name, lambda_type->getArgumentTypes()[j]);
-                            lambda_arguments_names.emplace_back(arg_name);
                         }
 
                         actions_stack.pushLevel(lambda_arguments);
@@ -2225,7 +2223,7 @@ void ExpressionAnalyzer::getActionsImpl(const ASTPtr & ast, bool no_subqueries, 
                         String lambda_name = getUniqueName(actions_stack.getSampleBlock(), "__lambda");
 
                         auto function_capture = std::make_shared<FunctionCapture>(
-                                lambda_actions, captured, lambda_arguments_names, result_type, result_name);
+                                lambda_actions, captured, lambda_arguments, result_type, result_name);
                         actions_stack.addAction(ExpressionAction::applyFunction(function_capture, captured, lambda_name), {});
 
                         argument_types[i] = std::make_shared<DataTypeFunction>(lambda_type->getArgumentTypes(), result_type);

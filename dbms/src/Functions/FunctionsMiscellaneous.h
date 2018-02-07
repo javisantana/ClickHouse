@@ -84,9 +84,10 @@ class FunctionCapture : public IFunctionBase, public IPreparedFunction, public F
                         public std::enable_shared_from_this<FunctionCapture>
 {
 public:
-    FunctionCapture(const ExpressionActionsPtr & expression_actions, const Names & captured, const Names & args,
+    FunctionCapture(const ExpressionActionsPtr & expression_actions, const Names & captured,
+                    const NamesAndTypesList & lambda_arguments,
                     const DataTypePtr & function_return_type, const std::string & expression_return_name)
-            : expression_actions(expression_actions), captured_names(captured), argument_names(args)
+            : expression_actions(expression_actions), captured_names(captured), lambda_arguments(lambda_arguments)
             , function_return_type(function_return_type), expression_return_name(expression_return_name)
     {
         const auto & all_arguments = expression_actions->getRequiredColumnsWithTypes();
@@ -102,7 +103,7 @@ public:
             {
                 auto it = arguments_map.find(name);
                 if (it == arguments_map.end())
-                    throw Exception("Lambda argument " + name + " not found in required columns.",
+                    throw Exception("Lambda captured argument " + name + " not found in required columns.",
                                     ErrorCodes::LOGICAL_ERROR);
 
                 types.push_back(it->second);
@@ -113,11 +114,11 @@ public:
         };
 
         captured_types = collect(captured_names);
-        argument_types = collect(argument_names);
 
-        for (const auto & argument : arguments_map)
-                throw Exception("Required column " + argument.first + " not found in lambda arguments.",
-                                ErrorCodes::LOGICAL_ERROR);
+        DataTypes argument_types;
+        argument_types.reserve(lambda_arguments.size());
+        for (const auto & lambda_argument : lambda_arguments)
+            argument_types.push_back(lambda_argument.type);
 
         return_type = std::make_shared<DataTypeFunction>(argument_types, function_return_type);
 
@@ -143,13 +144,17 @@ public:
         Names names;
         DataTypes types;
 
-        names.reserve(captured_names.size() + argument_names.size());
+        names.reserve(captured_names.size() + lambda_arguments.size());
         names.insert(names.end(), captured_names.begin(), captured_names.end());
-        names.insert(names.end(), argument_names.begin(), argument_names.end());
 
-        types.reserve(captured_types.size() + argument_types.size());
+        types.reserve(captured_types.size() + lambda_arguments.size());
         types.insert(types.end(), captured_types.begin(), captured_types.end());
-        types.insert(types.end(), argument_types.begin(), argument_types.end());
+
+        for (const auto & lambda_argument : lambda_arguments)
+        {
+            names.push_back(lambda_argument.name);
+            types.push_back(lambda_argument.type);
+        }
 
         for (const auto & argument : arguments)
             columns.push_back(block.getByPosition(argument));
@@ -192,9 +197,8 @@ private:
 
     ExpressionActionsPtr expression_actions;
     DataTypes captured_types;
-    DataTypes argument_types;
     Names captured_names;
-    Names argument_names;
+    NamesAndTypesList lambda_arguments
     DataTypePtr function_return_type;
     DataTypePtr return_type;
     std::string expression_return_name;
