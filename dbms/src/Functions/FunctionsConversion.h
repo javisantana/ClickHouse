@@ -1648,7 +1648,7 @@ protected:
             data_types[i] = arguments[i].type;
 
         auto monotonicity = getMonotonicityInformation(arguments.front().type, return_type.get());
-        return std::make_shared<FunctionCast>(context, name, std::move(monotonicity), arguments, return_type);
+        return std::make_shared<FunctionCast>(context, name, std::move(monotonicity), data_types, return_type);
     }
 
     DataTypePtr getReturnTypeImpl(const ColumnsWithTypeAndName & arguments) const override
