@@ -269,7 +269,9 @@ DataTypePtr FunctionCaseWithExpression::getReturnTypeImpl(const DataTypes & args
 
     /// Finally get the return type of the transform function.
     FunctionTransform fun_transform;
-    return fun_transform.getReturnType({{nullptr, args.front(), {}}, src_array_type, dst_array_type, {nullptr, args.back(), {}}});
+    ColumnsWithTypeAndName transform_args = {{nullptr, args.front(), {}}, {nullptr, src_array_type, {}},
+                                             {nullptr, dst_array_type, {}}, {nullptr, args.back(), {}}};
+    return fun_transform.getReturnType(transform_args);
 }
 
 void FunctionCaseWithExpression::executeImpl(Block & block, const ColumnNumbers & args, size_t result)
@@ -288,22 +290,22 @@ void FunctionCaseWithExpression::executeImpl(Block & block, const ColumnNumbers 
 
     /// Create the arrays required by the transform function.
     ColumnNumbers src_array_args;
-    DataTypes src_array_types;
+    ColumnsWithTypeAndName src_array_types;
 
     ColumnNumbers dst_array_args;
-    DataTypes dst_array_types;
+    ColumnsWithTypeAndName dst_array_types;
 
     for (size_t i = 1; i < (args.size() - 1); ++i)
     {
         if ((i % 2) != 0)
         {
             src_array_args.push_back(args[i]);
-            src_array_types.push_back(block.getByPosition(args[i]).type);
+            src_array_types.push_back(block.getByPosition(args[i]));
         }
         else
         {
             dst_array_args.push_back(args[i]);
-            dst_array_types.push_back(block.getByPosition(args[i]).type);
+            dst_array_types.push_back(block.getByPosition(args[i]));
         }
     }
 
