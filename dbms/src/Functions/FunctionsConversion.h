@@ -629,7 +629,7 @@ public:
     {
         if constexpr (std::is_same_v<ToDataType, DataTypeInterval>)
         {
-            out_return_type = std::make_shared<DataTypeInterval>(DataTypeInterval::Kind(Name::kind));
+            return std::make_shared<DataTypeInterval>(DataTypeInterval::Kind(Name::kind));
         }
         else
         {
@@ -1159,7 +1159,7 @@ class FunctionCast final : public IFunctionBase
 {
 public:
     using WrapperType = std::function<void(Block &, const ColumnNumbers &, size_t)>;
-    using MonotonicityForRange = std::function<Monotonicity(const IDataType &, const Field &, const Field &)>
+    using MonotonicityForRange = std::function<Monotonicity(const IDataType &, const Field &, const Field &)>;
 
     FunctionCast(const Context & context, const char * name, MonotonicityForRange && monotonicity_for_range
             , const DataTypes & argument_types, const DataTypePtr & return_type)
