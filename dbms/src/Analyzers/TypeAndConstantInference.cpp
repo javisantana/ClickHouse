@@ -153,7 +153,7 @@ void processFunction(const String & column_name, ASTPtr & ast, TypeAndConstantIn
                 throw Exception("Logical error: type of function argument was not inferred during depth-first search", ErrorCodes::LOGICAL_ERROR);
 
             argument_types.emplace_back(it->second.data_type);
-            argument_columns.emplace_back({nullptr, it->second.data_type, ""});
+            argument_columns.emplace_back(ColumnWithTypeAndName(nullptr, it->second.data_type, ""));
             if (it->second.is_constant_expression)
                 argument_columns.back().column = it->second.data_type->createColumnConst(1, it->second.value);
         }
