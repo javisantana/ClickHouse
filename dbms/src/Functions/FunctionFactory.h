@@ -65,7 +65,7 @@ private:
     template <typename Function>
     static FunctionBuilderPtr createDefaultFunction(const Context & context)
     {
-        return Function::create(context);
+        return std::make_shared<DefaultFunctionBuilder>(Function::create(context));
     }
 };
 
