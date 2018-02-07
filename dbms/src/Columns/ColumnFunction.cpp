@@ -149,7 +149,7 @@ ColumnWithTypeAndName ColumnFunction::reduce() const
 
     ColumnNumbers arguments(captured_columns.size());
     for (size_t i = 0; i < captured_columns.size(); ++i)
-        arguments.push_back(i);
+        arguments[i] = i;
 
     function->execute(block, arguments, captured_columns.size());
 
