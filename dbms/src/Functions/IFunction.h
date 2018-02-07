@@ -292,7 +292,7 @@ private:
 class DefaultFunction final : public IFunctionBase
 {
 public:
-    DefaultFunction(std::shared_ptr<IFunction> function, DataTypes && arguments, DataTypePtr && return_type)
+    DefaultFunction(std::shared_ptr<IFunction> function, DataTypes arguments, DataTypePtr return_type)
             : function(std::move(function)), arguments(std::move(arguments)), return_type(std::move(return_type)) {}
 
     String getName() const override { return function->getName(); }
