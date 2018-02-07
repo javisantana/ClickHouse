@@ -49,7 +49,7 @@ MutableColumnPtr ColumnFunction::cut(size_t start, size_t length) const
     return ColumnFunction::create(size_, function, capture);
 }
 
-MutableColumnPtr ColumnFunction::filter(const Filter & filt, ssize_t result_size_hint) const override
+MutableColumnPtr ColumnFunction::filter(const Filter & filt, ssize_t result_size_hint) const
 {
     ColumnsWithTypeAndName capture = captured_columns;
     for (auto & column : capture)
@@ -58,7 +58,7 @@ MutableColumnPtr ColumnFunction::filter(const Filter & filt, ssize_t result_size
     return ColumnFunction::create(size_, function, capture);
 }
 
-MutableColumnPtr ColumnFunction::permute(const Permutation & perm, size_t limit) const override
+MutableColumnPtr ColumnFunction::permute(const Permutation & perm, size_t limit) const
 {
     ColumnsWithTypeAndName capture = captured_columns;
     for (auto & column : capture)
@@ -77,7 +77,7 @@ std::vector<MutableColumnPtr> ColumnFunction::scatter(IColumn::ColumnIndex num_c
     {
         auto parts = captured_columns[capture].column->scatter(num_columns, selector);
         for (IColumn::ColumnIndex part = 0; part < num_columns; ++part)
-            captures[part][capture] = std::move(parts[part]);
+            captures[part][capture] = parts[part];
     }
 
     std::vector<MutableColumnPtr> columns;
