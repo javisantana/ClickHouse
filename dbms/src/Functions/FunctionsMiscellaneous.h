@@ -128,7 +128,7 @@ public:
         block.getByPosition(result).column = ColumnFunction::create(size, std::move(function), columns);
     }
 
-    size_t getNumberOfArguments() const override { return argument_types.size(); }
+    size_t getNumberOfArguments() const override { return captured_types.size(); }
 
 protected:
     DataTypePtr getReturnTypeImpl(const ColumnsWithTypeAndName &) const override { return return_type; }
