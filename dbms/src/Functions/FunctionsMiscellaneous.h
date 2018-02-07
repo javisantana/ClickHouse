@@ -131,9 +131,9 @@ public:
     size_t getNumberOfArguments() const override { return argument_types.size(); }
 
 protected:
-    DataTypePtr getReturnTypeImpl(const ColumnsWithTypeAndName & arguments) const override { return return_type; }
+    DataTypePtr getReturnTypeImpl(const ColumnsWithTypeAndName &) const override { return return_type; }
     bool useDefaultImplementationForNulls() const override { return false; }
-    FunctionBasePtr buildImpl(const ColumnsWithTypeAndName & arguments, const DataTypePtr & return_type) const override
+    FunctionBasePtr buildImpl(const ColumnsWithTypeAndName &, const DataTypePtr &) const override
     {
         return std::const_pointer_cast<FunctionCapture>(shared_from_this());
     }
