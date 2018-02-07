@@ -110,7 +110,7 @@ public:
     const DataTypes & getArgumentTypes() const override { return captured_types; }
     const DataTypePtr & getReturnType() const override { return return_type; }
 
-    PreparedFunctionPtr prepare(const Block & sample_block) const override
+    PreparedFunctionPtr prepare(const Block &) const override
     {
         return std::const_pointer_cast<FunctionCapture>(shared_from_this());
     }

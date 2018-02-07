@@ -392,7 +392,7 @@ bool PKCondition::canConstantBeWrappedByMonotonicFunctions(
 
             // Apply the next transformation step
             DataTypePtr new_type;
-            applyFunction(a.function_builder, out_type, out_value, new_type, out_value);
+            applyFunction(a.function, out_type, out_value, new_type, out_value);
             if (!new_type)
                 return false;
 
