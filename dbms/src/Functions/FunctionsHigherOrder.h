@@ -826,7 +826,8 @@ public:
                     column_first_array = column_array;
                 }
 
-                arrays.emplace_back({column_array->getDataPtr(), array_type->getNestedType(), array_with_type_and_name.name});
+                arrays.emplace_back(ColumnWithTypeAndName(column_array->getDataPtr(),
+                                                          array_type->getNestedType(), array_with_type_and_name.name));
             }
 
             /// Put all the necessary columns multiplied by the sizes of arrays into the block.

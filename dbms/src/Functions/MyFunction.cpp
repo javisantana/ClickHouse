@@ -131,6 +131,7 @@ bool allArgumentsAreConstants(const Block & block, const ColumnNumbers & args)
             return false;
     return true;
 }
+}
 
 bool PreparedFunctionImpl::defaultImplementationForConstantArguments(Block & block, const ColumnNumbers & args, size_t result)
 {
@@ -198,8 +199,6 @@ bool PreparedFunctionImpl::defaultImplementationForNulls(Block & block, const Co
     }
 
     return false;
-}
-
 }
 
 void PreparedFunctionImpl::execute(Block & block, const ColumnNumbers & args, size_t result)

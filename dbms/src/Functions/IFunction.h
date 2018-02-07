@@ -252,6 +252,8 @@ public:
     using FunctionBuilderImpl::getReturnTypeImpl;
     using FunctionBuilderImpl::getLambdaArgumentTypesImpl;
 
+    using FunctionBuilderImpl::getReturnType;
+
     PreparedFunctionPtr prepare(const Block & /*sample_block*/) const final
     {
         throw Exception("prepare is not implemented for IFunction", ErrorCodes::NOT_IMPLEMENTED);
