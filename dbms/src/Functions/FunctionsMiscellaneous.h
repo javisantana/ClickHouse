@@ -140,7 +140,7 @@ public:
         ColumnsWithTypeAndName columns;
         columns.reserve(arguments.size());
 
-        DataTypes names;
+        Names names;
         DataTypes types;
 
         names.reserve(captured_names.size() + argument_names.size());
