@@ -40,9 +40,9 @@ class FunctionExpression : public IFunctionBase, public IPreparedFunction,
                            public std::enable_shared_from_this<FunctionExpression>
 {
 public:
-    FunctionExpression(ExpressionActionsPtr expression_actions, DataTypePtr return_type, std::string return_name)
-            : expression_actions(std::move(expression_actions))
-            , return_type(std::move(return_type)), return_name(std::move(return_name))
+    FunctionExpression(const ExpressionActionsPtr & expression_actions,
+                       const DataTypePtr & return_type, const std::string & return_name)
+            : expression_actions(expression_actions), return_type(return_type), return_name(return_name)
     {
         auto & arguments = expression_actions->getRequiredColumnsWithTypes();
         argument_types.reserve(arguments.size());
@@ -83,10 +83,10 @@ class FunctionCapture : public IFunctionBase, public IPreparedFunction, public F
                         public std::enable_shared_from_this<FunctionCapture>
 {
 public:
-    FunctionCapture(ExpressionActionsPtr expression_actions, const Names & captured,
-                    DataTypePtr function_return_type, std::string expression_return_name)
-            : expression_actions(std::move(expression_actions)), function_return_type(std::move(function_return_type)),
-              expression_return_name(std::move(expression_return_name))
+    FunctionCapture(const ExpressionActionsPtr & expression_actions, const Names & captured,
+                    const DataTypePtr & function_return_type, const std::string & expression_return_name)
+            : expression_actions(expression_actions), function_return_type(function_return_type),
+              expression_return_name(expression_return_name)
     {
         auto & all_arguments = expression_actions->getRequiredColumnsWithTypes();
         NameSet captured_args(captured.begin(), captured.end());
