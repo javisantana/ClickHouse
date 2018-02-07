@@ -1084,7 +1084,10 @@ public:
         {
             size_t size = left_tuple->getElements().size();
             for (size_t i = 0; i < size; ++i)
-                getReturnType(ColumnsWithTypeAndName({ left_tuple->getElements()[i], right_tuple->getElements()[i] }));
+            {
+                ColumnsWithTypeAndName args = {left_tuple->getElements()[i], right_tuple->getElements()[i]};
+                getReturnType(args);
+            }
         }
 
         return std::make_shared<DataTypeUInt8>();

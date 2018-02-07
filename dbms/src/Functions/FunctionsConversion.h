@@ -1623,7 +1623,7 @@ private:
     }
 };
 
-class FunctionCastBuilder : public FunctionBuilderImpl
+class FunctionBuilderCast : public FunctionBuilderImpl
 {
 public:
     using MonotonicityForRange = FunctionCast::MonotonicityForRange;
