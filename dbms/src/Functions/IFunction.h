@@ -262,6 +262,11 @@ public:
         throw Exception("getArgumentTypes is not implemented for IFunction", ErrorCodes::NOT_IMPLEMENTED);
     }
 
+    const DataTypePtr & getReturnType() const override
+    {
+        throw Exception("getReturnType is not implemented for IFunction", ErrorCodes::NOT_IMPLEMENTED);
+    }
+
 protected:
     FunctionBasePtr buildImpl(const ColumnsWithTypeAndName & /*arguments*/, const DataTypePtr & /*return_type*/) const final
     {
