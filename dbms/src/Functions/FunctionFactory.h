@@ -37,10 +37,7 @@ public:
     template <typename Function>
     void registerFunction(CaseSensitiveness case_sensitiveness = CaseSensitive)
     {
-        if constexpr (std::is_base_of<IFunction, Function>::value)
-            registerFunction(Function::name, &createDefaultFunction<Function>, case_sensitiveness);
-        else
-            registerFunction(Function::name, &Function::create, case_sensitiveness);
+        registerFunction<Function>(Function::name, case_sensitiveness);
     }
 
     template <typename Function>
