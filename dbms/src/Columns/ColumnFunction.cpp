@@ -77,7 +77,7 @@ std::vector<MutableColumnPtr> ColumnFunction::scatter(IColumn::ColumnIndex num_c
     {
         auto parts = captured_columns[capture].column->scatter(num_columns, selector);
         for (IColumn::ColumnIndex part = 0; part < num_columns; ++part)
-            captures[part][capture] = parts[part];
+            captures[part][capture].column = std::move(parts[part]);
     }
 
     std::vector<MutableColumnPtr> columns;
@@ -94,12 +94,12 @@ std::vector<MutableColumnPtr> ColumnFunction::scatter(IColumn::ColumnIndex num_c
 void ColumnFunction::insertDefault()
 {
     for (auto & column : captured_columns)
-        column.column->insertDefault();
+        column.column->mutate()->insertDefault();
 }
 void ColumnFunction::popBack(size_t n)
 {
     for (auto & column : captured_columns)
-        column.column->popBack(n);
+        column.column->mutate()->popBack(n);
 }
 
 size_t ColumnFunction::byteSize() const
