@@ -198,7 +198,7 @@ private:
     ExpressionActionsPtr expression_actions;
     DataTypes captured_types;
     Names captured_names;
-    NamesAndTypesList lambda_arguments
+    NamesAndTypesList lambda_arguments;
     DataTypePtr function_return_type;
     DataTypePtr return_type;
     std::string expression_return_name;
