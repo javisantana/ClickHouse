@@ -32,12 +32,12 @@ TableFunctionPtr TableFunctionFactory::get(
     const std::string & name,
     const Context & context) const
 {
-    if (context.getSettings().readonly == 1)        /** For example, for readonly = 2 - allowed. */
-        throw Exception("Table functions are forbidden in readonly mode", ErrorCodes::READONLY);
 
     auto res = tryGet(name, context);
     if (!res)
     {
+        if (!res->isReadOnly() && context.getSettings().readonly == 1)        /** For example, for readonly = 2 - allowed. */
+            throw Exception(name + " table function is forbidden in readonly mode", ErrorCodes::READONLY);
         auto hints = getHints(name);
         if (!hints.empty())
             throw Exception("Unknown table function " + name + ". Maybe you meant: " + toString(hints), ErrorCodes::UNKNOWN_FUNCTION);

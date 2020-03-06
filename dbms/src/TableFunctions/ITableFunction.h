@@ -31,6 +31,9 @@ public:
     /// Get the main function name.
     virtual std::string getName() const = 0;
 
+    /// it's a read only table function
+    virtual bool isReadOnly() const { return false; }
+
     /// Create storage according to the query.
     StoragePtr execute(const ASTPtr & ast_function, const Context & context, const std::string & table_name) const;
 
